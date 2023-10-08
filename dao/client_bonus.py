@@ -1,8 +1,8 @@
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.services.database.dao.base import BaseDAO
-from app.services.database.models.client_bonus import ClientBonus
+from base import BaseDAO
+from ..models.client_bonus import ClientBonus
 
 
 class ClientBonusDAO(BaseDAO[ClientBonus]):

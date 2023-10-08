@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column
-from app.services.database.base import Base
+from ..base import Base
 
 
 class Washing(Base):

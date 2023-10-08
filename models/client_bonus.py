@@ -1,6 +1,6 @@
 from sqlalchemy import VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column, validates
-from app.services.database.base import Base
+from ..base import Base
 
 
 class ClientBonus(Base):

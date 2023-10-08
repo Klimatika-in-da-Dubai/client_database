@@ -4,7 +4,7 @@ from sqlalchemy import delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.services.database.base import Base
+from ..base import Base
 
 Model = TypeVar("Model", Base, Base)
 

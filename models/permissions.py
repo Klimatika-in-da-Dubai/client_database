@@ -1,6 +1,6 @@
 from sqlalchemy import Integer
 from sqlalchemy.orm import Mapped, mapped_column
-from app.services.database.base import Base
+from ..base import Base
 
 
 class Permission(Base):

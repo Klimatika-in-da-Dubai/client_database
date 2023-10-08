@@ -1,8 +1,8 @@
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.database.models.user import User
-from app.services.database.dao.base import BaseDAO
+from ..models.user import User
+from base import BaseDAO
 from app.utils.phone import phone_to_text
 
 
