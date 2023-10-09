@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from base import BaseDAO
+from ..dao.base import BaseDAO
 from ..models.washing import Washing
 
 

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.command_usage import CommandUsage
-from base import BaseDAO
+from ..dao.base import BaseDAO
 
 
 class CommandUsageDAO(BaseDAO[CommandUsage]):

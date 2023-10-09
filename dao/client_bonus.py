@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.utils.phone import phone_to_text
+from ..utils.phone import phone_to_text
 from ..dao.base import BaseDAO
 from ..models.client_bonus import ClientBonus
 

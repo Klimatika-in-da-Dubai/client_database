@@ -1,4 +1,3 @@
-from datetime import datetime
 from sqlalchemy import VARCHAR, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 from ..base import Base
@@ -17,4 +16,3 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(nullable=True)
     username: Mapped[str] = mapped_column(nullable=True)
     phone: Mapped[str] = mapped_column(VARCHAR(12), nullable=True)
-    registration_date: Mapped[datetime] = mapped_column(default=datetime.now)

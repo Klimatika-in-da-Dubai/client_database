@@ -1,9 +1,13 @@
+from datetime import datetime
 from aiogram.types import Message
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
 from ..models.user import User
-from base import BaseDAO
-from app.utils.phone import phone_to_text
+from ..models.washing import Washing
+from ..dao.base import BaseDAO
+from ..utils.phone import phone_to_text
 
 
 class UserDAO(BaseDAO[User]):
@@ -28,6 +32,29 @@ class UserDAO(BaseDAO[User]):
 
         user.phone = phone_to_text(phone)
         await self.commit()
+
+    async def get_users_by_phone(self, phone: str) -> list[User]:
+        result = await self._session.execute(select(User).where(User.phone == phone))
+        return list(result.scalars().all())
+
+    async def get_user_last_visit(self, user: User) -> datetime | None:
+        last_washing = await self.get_user_last_washing(user)
+        if last_washing is None:
+            return None
+
+        return last_washing.date
+
+    async def get_user_last_washing(self, user: User) -> Washing | None:
+        if user.phone is None:
+            raise ValueError("Can't get last washing of user with no phone")
+
+        result = await self._session.execute(
+            select(Washing)
+            .where(Washing.phone == user.phone)
+            .order_by(Washing.date.desc())
+        )
+
+        return result.scalar()
 
 
 def get_user_from_message(message: Message) -> User:
