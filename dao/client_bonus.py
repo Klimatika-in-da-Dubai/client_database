@@ -1,7 +1,8 @@
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from base import BaseDAO
+from app.utils.phone import phone_to_text
+from ..dao.base import BaseDAO
 from ..models.client_bonus import ClientBonus
 
 
@@ -26,6 +27,7 @@ class ClientBonusDAO(BaseDAO[ClientBonus]):
         await self.commit()
 
     async def get_by_phone(self, phone: str) -> Optional[ClientBonus]:
+        phone = phone_to_text(phone)
         result = await self._session.execute(
             select(self._model).where(self._model.phone == phone)
         )
