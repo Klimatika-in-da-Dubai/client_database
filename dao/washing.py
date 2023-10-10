@@ -8,3 +8,6 @@ class WashingDAO(BaseDAO[Washing]):
 
     def __init__(self, session: AsyncSession):
         super().__init__(Washing, session)
+
+    async def is_washing_exists(self, washing: Washing) -> bool:
+        return await self.get_by_id(washing.id) is not None

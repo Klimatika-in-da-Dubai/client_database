@@ -34,6 +34,7 @@ class UserDAO(BaseDAO[User]):
         await self.commit()
 
     async def get_users_by_phone(self, phone: str) -> list[User]:
+        phone = phone_to_text(phone)
         result = await self._session.execute(select(User).where(User.phone == phone))
         return list(result.scalars().all())
 
