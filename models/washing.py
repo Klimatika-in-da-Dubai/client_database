@@ -16,6 +16,7 @@ class Washing(Base):
     mode: Mapped[int]
     phone: Mapped[str] = mapped_column(VARCHAR(12), nullable=True)
     bonuses: Mapped[int] = mapped_column(nullable=True)
+    promocode: Mapped[int] = mapped_column(nullable=True)
     price: Mapped[float]
 
     def __repr__(self) -> str:
