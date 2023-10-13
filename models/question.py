@@ -19,7 +19,7 @@ class Question(Base):
 
 
 class QuestionCategory(Base):
-    __tablename__ = "questions_categories"
+    __tablename__ = "question_categories"
 
     question_id: Mapped[int] = mapped_column(
         ForeignKey("questions.id"), primary_key=True

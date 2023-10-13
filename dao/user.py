@@ -10,6 +10,11 @@ from ..dao.base import BaseDAO
 from ..utils.phone import phone_to_text
 
 
+class UserNotRegisteredError(Exception):
+    def __init__(self, user_id: int) -> None:
+        super().__init__(user_id)
+
+
 class UserDAO(BaseDAO[User]):
     """ORM queries for users table"""
 
@@ -28,16 +33,14 @@ class UserDAO(BaseDAO[User]):
     async def add_phone(self, user_id: int, phone: str) -> None:
         user: User | None = await self.get_by_id(user_id)
         if user is None:
-            raise ValueError("user should not be None")
+            raise UserNotRegisteredError(user_id)
 
         user.phone = phone_to_text(phone)
         await self.commit()
 
     async def get_users_by_phone(self, phone: str) -> list[User]:
         phone = phone_to_text(phone)
-        result = await self._session.execute(
-            select(self._model).where(User.phone == phone)
-        )
+        result = await self._session.execute(select(User).where(User.phone == phone))
         return list(result.scalars().all())
 
     async def get_user_last_visit(self, user: User) -> datetime | None:

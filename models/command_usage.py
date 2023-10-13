@@ -5,7 +5,7 @@ from ..base import Base
 
 
 class CommandUsage(Base):
-    __tablename__ = "commands_usages"
+    __tablename__ = "command_usages"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     usage_timestamp: Mapped[datetime] = mapped_column(default=datetime.now)

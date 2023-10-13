@@ -15,7 +15,7 @@ class Role(Base):
 class UserRole(Base):
     """Table for matching roles to users"""
 
-    __tablename__ = "users_roles"
+    __tablename__ = "user_roles"
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), primary_key=True)
@@ -24,7 +24,7 @@ class UserRole(Base):
 class RolePermission(Base):
     """Table for matching role to permissions"""
 
-    __tablename__ = "roles_permissions"
+    __tablename__ = "role_permissions"
 
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), primary_key=True)
     permission_id: Mapped[int] = mapped_column(
