@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar, Type, Generic
+from typing import Any, TypeVar, Type, Generic
 
 from sqlalchemy import delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,9 +21,10 @@ class BaseDAO(Generic[Model]):
         self._model = model
         self._session = session
 
-    async def add(self, model: Model):
-        await self._session.merge(model)
+    async def add(self, model: Model) -> Any:
+        model = await self._session.merge(model)
         await self.commit()
+        return model
 
     async def get_all(self) -> list[Model]:
         """
@@ -33,7 +34,7 @@ class BaseDAO(Generic[Model]):
         result = await self._session.execute(select(self._model))
         return list(result.scalars().all())
 
-    async def get_by_id(self, id_: Any) -> Optional[Model]:
+    async def get_by_id(self, id_: Any) -> Model:
         """
         :param id_: input id
         :return:
@@ -41,7 +42,7 @@ class BaseDAO(Generic[Model]):
         result = await self._session.execute(
             select(self._model).where(self._model.id == id_)
         )
-        return result.scalar_one_or_none()
+        return result.scalar_one()
 
     async def delete_all(self) -> None:
         """

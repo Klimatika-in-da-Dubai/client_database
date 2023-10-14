@@ -1,7 +1,11 @@
 from datetime import datetime
+from typing import Optional
 from aiogram.types import Message
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models.permissions import Permission
+from ..models.role import RolePermission, UserRole
 
 
 from ..models.user import User
@@ -31,10 +35,7 @@ class UserDAO(BaseDAO[User]):
         await self._session.commit()
 
     async def add_phone(self, user_id: int, phone: str) -> None:
-        user: User | None = await self.get_by_id(user_id)
-        if user is None:
-            raise UserNotRegisteredError(user_id)
-
+        user: User = await self.get_by_id(user_id)
         user.phone = phone_to_text(phone)
         await self.commit()
 
@@ -43,24 +44,41 @@ class UserDAO(BaseDAO[User]):
         result = await self._session.execute(select(User).where(User.phone == phone))
         return list(result.scalars().all())
 
-    async def get_user_last_visit(self, user: User) -> datetime | None:
-        last_washing = await self.get_user_last_washing(user)
+    async def get_user_last_visit_datetime(
+        self, user: User, before: Optional[datetime] = None
+    ) -> datetime | None:
+        last_washing = await self.get_user_last_washing(user, before)
         if last_washing is None:
             return None
 
         return last_washing.date
 
-    async def get_user_last_washing(self, user: User) -> Washing | None:
-        if user.phone is None:
-            raise ValueError("Can't get last washing of user with no phone")
-
-        result = await self._session.execute(
+    async def get_user_last_washing(
+        self, user: User, before: Optional[datetime] = None
+    ) -> Washing | None:
+        query = (
             select(Washing)
             .where(Washing.phone == user.phone)
             .order_by(Washing.date.desc())
         )
 
+        if before is not None:
+            query = query.where(Washing.date < before)
+
+        result = await self._session.execute(query)
+
         return result.scalar()
+
+    async def get_users_by_permission(self, permission_name: str) -> list[User]:
+        query = (
+            select(User)
+            .join(UserRole, User.id == UserRole.user_id)
+            .join(RolePermission, UserRole.role_id == RolePermission.role_id)
+            .join(Permission, RolePermission.permission_id == Permission.id)
+            .where(Permission.name == permission_name)
+        )
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
 
 
 def get_user_from_message(message: Message) -> User:

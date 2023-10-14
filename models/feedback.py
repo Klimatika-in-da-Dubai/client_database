@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import ARRAY, ForeignKey, String
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from ..base import Base
 
@@ -12,5 +12,19 @@ class Feedback(Base):
     question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"))
     washing_id: Mapped[int] = mapped_column(ForeignKey("washings.id"))
     date: Mapped[datetime] = mapped_column(default=datetime.now)
-    text: Mapped[str] = mapped_column(nullable=True)
-    attached_files: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
+
+
+class FeedbackMessage(Base):
+    """
+    feedback_id: ForeignKey("feedbacks.id"), primary_key=True
+    message_id: ForeignKey("messages.id"), primary_key=True
+    user_id: ForeignKey("users.id"), primary_key=True
+    """
+
+    __tablename__ = "feedback_messages"
+
+    feedback_id: Mapped[int] = mapped_column(
+        ForeignKey("feedbacks.id"), primary_key=True
+    )
+    message_id: Mapped[int] = mapped_column(ForeignKey("messages.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)

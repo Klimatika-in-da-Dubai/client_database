@@ -11,5 +11,4 @@ class CommandUsageDAO(BaseDAO[CommandUsage]):
         super().__init__(CommandUsage, session)
 
     async def add_command_usage(self, command_usage: CommandUsage) -> None:
-        await self._session.merge(command_usage)
-        await self._session.commit()
+        await self.add(command_usage)
