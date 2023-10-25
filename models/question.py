@@ -22,11 +22,14 @@ class QuestionCategory(Base):
     __tablename__ = "question_categories"
 
     question_id: Mapped[int] = mapped_column(
-        ForeignKey("questions.id"), primary_key=True
+        ForeignKey("questions.id", ondelete="CASCADE"), primary_key=True
     )
     category_id: Mapped[int] = mapped_column(
         ForeignKey("categories.id", ondelete="CASCADE"), primary_key=True
     )
+
+
+MEASURABLE_CATEGORY = "Измеримые"
 
 
 class Category(Base):

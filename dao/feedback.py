@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.message import Message
@@ -23,3 +24,12 @@ class FeedbackDAO(BaseDAO):
             feedback_id=feedback.id, message_id=message_id, user_id=feedback.user_id
         )
         await self.add(feedback_message)
+
+    async def get_feedback_messages(self, feedback_id: int) -> list[Message]:
+        result = await self._session.execute(
+            select(Message)
+            .join(FeedbackMessage, FeedbackMessage.message_id == Message.id)
+            .where(FeedbackMessage.feedback_id == feedback_id)
+            .order_by(Message.id.asc())
+        )
+        return list(result.scalars().all())

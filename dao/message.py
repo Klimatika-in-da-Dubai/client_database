@@ -11,3 +11,8 @@ class MessageDAO(BaseDAO):
         await self.add(file)
         message_file = MessageFile(message_id=message.id, file_id=file.id)
         await self.add(message_file)
+
+    async def change_message(self, message_id: str, text: str):
+        message: Message = await self.get_by_id(message_id)
+        message.text = text
+        await self.commit()
