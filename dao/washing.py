@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..dao.base import BaseDAO
 from ..models.washing import Washing
@@ -10,4 +11,7 @@ class WashingDAO(BaseDAO[Washing]):
         super().__init__(Washing, session)
 
     async def is_washing_exists(self, washing: Washing) -> bool:
-        return await self.get_by_id(washing.id) is not None
+        result = await self._session.execute(
+            select(Washing).where(Washing.id == washing.id)
+        )
+        return result.first() is not None
