@@ -1,5 +1,5 @@
 from aiogram.enums import InputMediaType
-from apscheduler.executors.base import datetime
+from datetime import datetime
 from sqlalchemy import VARCHAR, BigInteger, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from ..base import Base
