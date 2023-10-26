@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.message import Message
+from ..models.message import File, Message, MessageFile
 from ..dao.base import BaseDAO
 from ..models.feedback import Feedback, FeedbackMessage
 
@@ -32,4 +32,16 @@ class FeedbackDAO(BaseDAO):
             .where(FeedbackMessage.feedback_id == feedback_id)
             .order_by(Message.id.asc())
         )
+        return list(result.scalars().all())
+
+    async def get_attached_files_to_feedback(self, feedback_id: int) -> list[File]:
+        query = (
+            select(File)
+            .join(MessageFile, MessageFile.file_id == File.id)
+            .join(Message, Message.id == MessageFile.message_id)
+            .join(FeedbackMessage, FeedbackMessage.message_id == Message.id)
+            .where(FeedbackMessage.feedback_id == feedback_id)
+            .order_by(Message.id.asc())
+        )
+        result = await self._session.execute(query)
         return list(result.scalars().all())
