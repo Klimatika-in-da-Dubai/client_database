@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.message import File, Message, MessageFile
 from ..models.question import Category, QuestionCategory
 from ..models.washing import Washing
-from ..models.message import Message
 from ..dao.base import BaseDAO
 from ..models.feedback import Feedback, FeedbackMessage
 
