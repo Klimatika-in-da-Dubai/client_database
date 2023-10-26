@@ -39,7 +39,6 @@ class FeedbackDAO(BaseDAO):
         )
         return list(result.scalars().all())
 
-
     async def get_attached_files_to_feedback(self, feedback_id: int) -> list[File]:
         query = (
             select(File)
@@ -49,6 +48,9 @@ class FeedbackDAO(BaseDAO):
             .where(FeedbackMessage.feedback_id == feedback_id)
             .order_by(Message.id.asc())
         )
+
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
 
     async def get_feedback_messages_between_time(
         self,
