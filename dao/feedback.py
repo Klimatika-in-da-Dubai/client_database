@@ -1,7 +1,12 @@
+from datetime import datetime
+from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.message import File, Message, MessageFile
+from ..models.question import Category, QuestionCategory
+from ..models.washing import Washing
+from ..models.message import Message
 from ..dao.base import BaseDAO
 from ..models.feedback import Feedback, FeedbackMessage
 
@@ -34,6 +39,7 @@ class FeedbackDAO(BaseDAO):
         )
         return list(result.scalars().all())
 
+
     async def get_attached_files_to_feedback(self, feedback_id: int) -> list[File]:
         query = (
             select(File)
@@ -43,5 +49,27 @@ class FeedbackDAO(BaseDAO):
             .where(FeedbackMessage.feedback_id == feedback_id)
             .order_by(Message.id.asc())
         )
+
+    async def get_feedback_messages_between_time(
+        self,
+        begin: datetime,
+        end: datetime,
+        question_category: Optional[str] = None,
+    ) -> list[Message]:
+        query = (
+            select(Message)
+            .join(FeedbackMessage, FeedbackMessage.message_id == Message.id)
+            .join(Feedback, FeedbackMessage.feedback_id == Feedback.id)
+            .join(
+                QuestionCategory, QuestionCategory.question_id == Feedback.question_id
+            )
+            .join(Category, Category.id == QuestionCategory.category_id)
+            .join(Washing, Washing.id == Feedback.washing_id)
+            .where(Feedback.date.between(begin, end))
+        )
+
+        if question_category:
+            query = query.where(Category.name == question_category)
+
         result = await self._session.execute(query)
         return list(result.scalars().all())
