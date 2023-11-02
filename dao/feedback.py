@@ -7,7 +7,12 @@ from ..models.message import File, Message, MessageFile
 from ..models.question import Category, QuestionCategory
 from ..models.washing import Washing
 from ..dao.base import BaseDAO
-from ..models.feedback import Feedback, FeedbackMessage
+from ..models.feedback import (
+    ConversationStatus,
+    Feedback,
+    FeedbackConversation,
+    FeedbackMessage,
+)
 
 
 class FeedbackDAO(BaseDAO):
@@ -74,3 +79,43 @@ class FeedbackDAO(BaseDAO):
 
         result = await self._session.execute(query)
         return list(result.scalars().all())
+
+    async def create_conversation(self, feedback_id: int, reviewer_id: int):
+        feedback_conversation = FeedbackConversation(
+            feedback_id=feedback_id, reviewer_id=reviewer_id
+        )
+        await self.add(feedback_conversation)
+
+    async def is_feedback_conversation_active(self, feedback_id: int) -> bool:
+        query = select(FeedbackConversation).where(
+            FeedbackConversation.feedback_id == feedback_id
+        )
+
+        result = await self._session.execute(query)
+        if len(result.scalars().all()) == 0:
+            return False
+
+        return any(
+            [
+                conv.status == ConversationStatus.IN_PROGRESS
+                for conv in result.scalars().all()
+            ]
+        )
+
+    async def get_conversation(
+        self, feedback_id: int, reviewer_id: int
+    ) -> FeedbackConversation:
+        query = (
+            select(FeedbackConversation)
+            .where(FeedbackConversation.feedback_id == feedback_id)
+            .where(FeedbackConversation.reviewer_id == reviewer_id)
+        )
+        result = await self._session.execute(query)
+        return result.scalar_one()
+
+    async def update_conversation_status(
+        self, feedback_id: int, reviewer_id: int, status: ConversationStatus
+    ):
+        feedback_conversation = await self.get_conversation(feedback_id, reviewer_id)
+        feedback_conversation.status = status
+        await self.commit()

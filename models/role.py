@@ -1,3 +1,4 @@
+from enum import StrEnum
 from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 from ..base import Base
@@ -30,3 +31,8 @@ class RolePermission(Base):
     permission_id: Mapped[int] = mapped_column(
         ForeignKey("permissions.id"), primary_key=True
     )
+
+
+class PermissionEnum(StrEnum):
+    GET_FEEDBACK = "GET_FEEDBACK"
+    ANSWER_FEEDBACK = "ANSWER_FEEDBACK"

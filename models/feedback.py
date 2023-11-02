@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum, auto
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from ..base import Base
@@ -28,3 +29,21 @@ class FeedbackMessage(Base):
     )
     message_id: Mapped[int] = mapped_column(ForeignKey("messages.id"), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+
+
+class ConversationStatus(Enum):
+    IN_PROGRESS = auto()
+    CLOSED = auto()
+    CANCELED = auto()
+
+
+class FeedbackConversation(Base):
+    __tablename__ = "feedback_conversations"
+
+    feedback_id: Mapped[int] = mapped_column(
+        ForeignKey("feedbacks.id", ondelete="CASCADE"), primary_key=True
+    )
+    reviewer_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    status: Mapped[ConversationStatus] = mapped_column(
+        default=ConversationStatus.IN_PROGRESS
+    )

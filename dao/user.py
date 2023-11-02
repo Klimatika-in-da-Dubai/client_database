@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.permissions import Permission
-from ..models.role import RolePermission, UserRole
+from ..models.role import PermissionEnum, RolePermission, UserRole
 
 
 from ..models.user import User
@@ -79,6 +79,24 @@ class UserDAO(BaseDAO[User]):
         )
         result = await self._session.execute(query)
         return list(result.scalars().all())
+
+    async def get_user_permissions(self, user_id: int) -> list[Permission]:
+        query = (
+            select(Permission)
+            .join(RolePermission, RolePermission.permission_id == Permission.id)
+            .join(UserRole, UserRole.role_id == RolePermission.role_id)
+            .join(User, User.id == UserRole.user_id)
+            .where(User.id == user_id)
+        )
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
+
+    async def is_user_have_permission(
+        self, user_id: int, permission: PermissionEnum
+    ) -> bool:
+        permissions = await self.get_user_permissions(user_id)
+        permissions_name = [permission.name for permission in permissions]
+        return permission in permissions_name
 
 
 def get_user_from_message(message: Message) -> User:
