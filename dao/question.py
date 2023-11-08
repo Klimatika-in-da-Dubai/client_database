@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..dao.base import BaseDAO
-from ..models.question import Category, Question, QuestionCategory
+from ..models.question import Category, CategoryEnum, Question, QuestionCategory
 
 
 class QuestionDAO(BaseDAO):
@@ -23,3 +23,16 @@ class QuestionDAO(BaseDAO):
             .where(QuestionCategory.question_id == question_id)
         )
         return list(result.scalars().all())
+
+    async def is_question_have_category(
+        self, question_id: int, category: CategoryEnum
+    ) -> bool:
+        query = (
+            select(Question)
+            .join(QuestionCategory, QuestionCategory.question_id == question_id)
+            .join(Category, Category.id == QuestionCategory.category_id)
+            .where(Category.name == category)
+        )
+
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none() is not None

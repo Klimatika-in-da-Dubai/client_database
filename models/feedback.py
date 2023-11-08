@@ -47,3 +47,13 @@ class FeedbackConversation(Base):
     status: Mapped[ConversationStatus] = mapped_column(
         default=ConversationStatus.IN_PROGRESS
     )
+
+
+class FeedbackNotification(Base):
+    __tablename__ = "feedback_notifications"
+
+    feedback_id: Mapped[int] = mapped_column(
+        ForeignKey("feedbacks.id", ondelete="CASCADE"), primary_key=True
+    )
+    chat_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    message_id: Mapped[int]

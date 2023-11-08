@@ -1,3 +1,4 @@
+from enum import StrEnum
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from ..base import Base
@@ -29,7 +30,9 @@ class QuestionCategory(Base):
     )
 
 
-MEASURABLE_CATEGORY = "Измеримые"
+class CategoryEnum(StrEnum):
+    MEASURABLE_CATEGORY = "Измеримые"
+    WASHING_CATEGORY = "Мойка автомобиля"
 
 
 class Category(Base):
