@@ -32,7 +32,8 @@ class QuestionDAO(BaseDAO):
             .join(QuestionCategory, QuestionCategory.question_id == question_id)
             .join(Category, Category.id == QuestionCategory.category_id)
             .where(Category.name == category)
+            .where(Question.id == question_id)
         )
-
         result = await self._session.execute(query)
+        print(result)
         return result.scalar_one_or_none() is not None
