@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..dao.base import BaseDAO
@@ -8,12 +9,22 @@ class QuestionDAO(BaseDAO):
     def __init__(self, session: AsyncSession):
         super().__init__(Question, session)
 
-    async def get_questions_by_category_id(self, category_id: int) -> list[Question]:
-        result = await self._session.execute(
-            select(self._model)
-            .join(QuestionCategory, QuestionCategory.category_id == category_id)
-            .where(self._model.disabled.is_(False))
-        )
+    async def get_active_questions(
+        self, category: Optional[CategoryEnum] = None
+    ) -> list[Question]:
+        query = select(self._model)
+        if category is not None:
+            query = (
+                query.join(
+                    QuestionCategory, QuestionCategory.question_id == Question.id
+                )
+                .join(Category, Category.id == QuestionCategory.category_id)
+                .where(Category.name == category)
+            )
+
+        query = query.where(self._model.disabled.is_(False))
+
+        result = await self._session.execute(query)
         return list(result.scalars().all())
 
     async def get_question_categories(self, question_id: int) -> list[Category]:

@@ -31,8 +31,9 @@ class QuestionCategory(Base):
 
 
 class CategoryEnum(StrEnum):
-    MEASURABLE_CATEGORY = "Измеримые"
-    WASHING_CATEGORY = "Мойка автомобиля"
+    MEASURABLE = "Измеримые"
+    WASHING = "Мойка автомобиля"
+    YES_NO = "Да/Нет"
 
 
 class Category(Base):
