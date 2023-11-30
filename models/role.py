@@ -36,3 +36,4 @@ class RolePermission(Base):
 class PermissionEnum(StrEnum):
     GET_FEEDBACK = "GET_FEEDBACK"
     ANSWER_FEEDBACK = "ANSWER_FEEDBACK"
+    CREATE_POST = "CREATE_POST"
