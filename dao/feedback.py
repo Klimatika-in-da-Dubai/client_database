@@ -37,6 +37,17 @@ class FeedbackDAO(BaseDAO):
         )
         await self.add(feedback_message)
 
+    async def get_last_4_answered_feedbacks(self, client_id: int) -> list[Feedback]:
+        query = (
+            select(Feedback)
+            .where(Feedback.user_id == client_id)
+            .order_by(Feedback.id.desc())
+            .limit(4)
+        )
+
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
+
     async def get_client_feedbacks(
         self, client_id: int, category: Optional[CategoryEnum] = None
     ) -> list[Feedback]:
