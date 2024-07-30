@@ -177,3 +177,17 @@ class FeedbackDAO(BaseDAO):
         return await questiondao.is_question_have_category(
             feedback.question_id, category
         )
+
+    async def get_feedback_messages_by_question_id(
+        self, begin: datetime, end: datetime, question_id: int
+    ) -> list[Message]:
+        query = (
+            select(Message)
+            .join(FeedbackMessage, FeedbackMessage.message_id == Message.id)
+            .join(Feedback, FeedbackMessage.feedback_id == Feedback.id)
+            .where(Feedback.date.between(begin, end))
+            .where(Feedback.question_id == question_id)
+        )
+
+        result = await self._session.execute(query)
+        return list(result.scalars().all())
